@@ -1,6 +1,8 @@
 import os
 from flask import url_for,render_template, request, redirect, flash, Blueprint
 from flask_login import login_user,current_user,logout_user,login_required
+from werkzeug.urls import url_parse
+
 from companyblog import db
 from companyblog.models import User, BlogPost
 from companyblog.users.forms import LoginForm, RegistrationForm, UpdateUserForm
@@ -20,6 +22,7 @@ def register():
                     password=form.password.data)
         db.session.add(user)
         db.session.commit()
+        flash('You have succesfully registered!', 'success')
         return redirect(url_for("users.login"))
     return render_template("register.html", form=form)
         
@@ -28,17 +31,22 @@ def register():
 # login
 @users.route('/login', methods=['GET', 'POST'])
 def login():
-        form = LoginForm()
+    if current_user.is_authenticated:
+        return redirect(url_for('core.index'))
+    form = LoginForm()
 
-        if form.validate_on_submit():
-                user = User.query.filter_by(email=form.email.data).first()
-                if user.check_password(form.password.data) and user is not None:
-                        login_user(user)
-                        next = request.args.get('next')
-                        if next == None or not next[0]=='/':
-                                next = url_for('core.index')
-                        return redirect(next)
-        return render_template('login.html', form=form)
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid email or password', 'warning')
+            return redirect(url_for('users.login'))
+        login_user(user)
+        flash("You've been logged in!", 'success')
+        next = request.args.get('next')
+        if not next or url_parse(next).netloc != '':
+            next = url_for('core.index')
+        return redirect(next)
+    return render_template('login.html', form=form)
 
 
 # logout
@@ -46,6 +54,7 @@ def login():
 @login_required
 def logout():
     logout_user()
+    flash("You've been logged out!", 'success')
     return redirect(url_for("core.index"))
 
 # account/update
@@ -57,11 +66,11 @@ def account():
         current_user.username = form.username.data
         current_user.email = form.email.data
         if form.picture.data:
-            username = current_user.username
-            pic = add_profile_pic(form.picture.data, username)
-            current_user.profile_image = pic  
+            email = current_user.email
+            pic = add_profile_pic(form.picture.data, email)
+            current_user.profile_image = pic
         db.session.commit()
-        flash("User Account Succesfully Updated!", "success")
+        flash("User account succesfully updated!", "success")
         return redirect(url_for("users.account"))
 
     elif request.method == "GET":

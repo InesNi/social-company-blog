@@ -1,11 +1,12 @@
 {% extends "base.html" %}
+{% from 'macros.html' import render_field %}
 {% block content %}
 <div class="container">
-   <form method="POST">
-      {{form.hidden_tag()}}
-      {{form.email.label}}{{form.email}}<br>
-      {{form.password.label}}{{form.password}}<br>
-      {{form.submit()}}
+   <form class="form-group" method="POST" action="">
+      {{ form.hidden_tag() }}
+        {% for field in form %}
+         {{ render_field(field) }}
+        {% endfor %}
    </form>
 </div>
 {% endblock %}
