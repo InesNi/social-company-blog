@@ -41,7 +41,7 @@ def login():
             flash('Invalid email or password', 'error')
             return redirect(url_for('users.login'))
         login_user(user)
-        flash("You've have been logged in!", 'success')
+        flash("You've been logged in!", 'success')
         next = request.args.get('next')
         if not next or url_parse(next).netloc != '':
             next = url_for('core.index')
