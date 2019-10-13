@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="jumbotron">
-        <h1>Company Blog</h1>
+        <h1>Chookity Blog</h1>
 
     </div>
     <div class="container">
@@ -17,7 +17,7 @@
         {% endfor %}
     </div>
     <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center">
+            <ul class="pagination justify-content-center pt-3">
                 {% for page_num in blog_posts.iter_pages(left_edge=1,right_edge=1,left_current=1,right_current=1) %}
                     {% if blog_posts.page == page_num %}
                     <li class='page-item disabled'>
