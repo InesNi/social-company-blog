@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'mef8ewoyt38474924i10jrdeusbgdsy763gv4fes6saavJHVV£!V£V'
+app.config['SECRET_KEY'] = 'mef8ewoyt38474924i10jrdeusb'
 ################################
 ####### DATABASE SETUP #########
 ################################
