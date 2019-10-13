@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from 'macros.html' import render_field %}
 {% block content %}
 
 <div class="jumbotron">
@@ -9,24 +10,11 @@
 </div>
 
 <div class="container">
-    <form action="" enctype="multipart/form-data" method="POST">
-
+    <form class="form-group" action="" enctype="multipart/form-data" method="POST">
             {{form.hidden_tag()}}
-        <div class="form-group">
-            {{form.username.label(class="form-group")}}
-            {{form.username(class="form-control")}}
-        </div>
-        <div class="form-group">
-            {{form.email.label(class="form-group")}}
-            {{form.email(class="form-control")}}
-        </div>
-        <div class="form-group">
-            {{form.picture.label(class="form-group")}}
-            {{form.picture(class="form-control")}}
-        </div>
-        <div class="form-group">
-            {{form.submit(class="btn btn-primary")}}
-        </div>
+                {% for field in form %}
+            {{ render_field(field) }}
+      {% endfor %}
     </form>
 </div>
 {% endblock %}
