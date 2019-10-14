@@ -61,7 +61,10 @@ def logout():
 @users.route('/account', methods=['GET','POST'])
 @login_required
 def account():
-    form = UpdateUserForm()
+    form = UpdateUserForm(
+        orig_username=current_user.username,
+        orig_email=current_user.email
+    )
     if form.validate_on_submit():
         current_user.username = form.username.data
         current_user.email = form.email.data
