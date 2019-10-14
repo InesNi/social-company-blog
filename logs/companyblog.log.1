@@ -1,0 +1,73 @@
+2019-10-14 16:50:47,801 INFO: Company Blog [in /Users/nidhi/Documents/Projects/social-company-blog/companyblog/__init__.py:73]
+2019-10-14 16:51:21,277 ERROR: Exception on /bla1 [GET] [in /Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/companyblog/users/views.py", line 93, in user_posts
+    return render_template("user_blog_posts.html", blog_posts=blog_posts, user=user)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/templating.py", line 135, in render_template
+    context, ctx.app)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/templating.py", line 117, in _render
+    rv = template.render(context)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/jinja2/asyncsupport.py", line 76, in render
+    return original_render(self, *args, **kwargs)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/jinja2/environment.py", line 1008, in render
+    return self.environment.handle_exception(exc_info, True)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/jinja2/environment.py", line 780, in handle_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/jinja2/_compat.py", line 37, in reraise
+    raise value.with_traceback(tb)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/companyblog/templates/user_blog_posts.html", line 3, in top-level template code
+    {% from 'macros.html' import paginate %}
+  File "/Users/nidhi/Documents/Projects/social-company-blog/companyblog/templates/base.html", line 64, in top-level template code
+    {% block content %}
+  File "/Users/nidhi/Documents/Projects/social-company-blog/companyblog/templates/user_blog_posts.html", line 9, in block "content"
+    <img align='center' src="{{url_for('static',filename='profile_pics/'+current_user.profile_image)}}" alt="users profile image">
+jinja2.exceptions.UndefinedError: 'flask_login.mixins.AnonymousUserMixin object' has no attribute 'profile_image'
+2019-10-14 17:15:44,071 INFO: Company Blog [in /Users/nidhi/Documents/Projects/social-company-blog/companyblog/__init__.py:73]
+2019-10-14 17:16:04,395 ERROR: Exception on /bla1 [GET] [in /Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/app.py:1761]
+Traceback (most recent call last):
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/companyblog/users/views.py", line 93, in user_posts
+    return render_template("user_blog_posts.html", blog_posts=blog_posts, user=user)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/templating.py", line 135, in render_template
+    context, ctx.app)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/flask/templating.py", line 117, in _render
+    rv = template.render(context)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/jinja2/asyncsupport.py", line 76, in render
+    return original_render(self, *args, **kwargs)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/jinja2/environment.py", line 1008, in render
+    return self.environment.handle_exception(exc_info, True)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/jinja2/environment.py", line 780, in handle_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/env/lib/python3.7/site-packages/jinja2/_compat.py", line 37, in reraise
+    raise value.with_traceback(tb)
+  File "/Users/nidhi/Documents/Projects/social-company-blog/companyblog/templates/user_blog_posts.html", line 3, in top-level template code
+    {% from 'macros.html' import paginate %}
+  File "/Users/nidhi/Documents/Projects/social-company-blog/companyblog/templates/base.html", line 64, in top-level template code
+    {% block content %}
+  File "/Users/nidhi/Documents/Projects/social-company-blog/companyblog/templates/user_blog_posts.html", line 9, in block "content"
+    <img align='center' src="{{url_for('static',filename='profile_pics/'+current_user.profile_image)}}" alt="users profile image">
+jinja2.exceptions.UndefinedError: 'flask_login.mixins.AnonymousUserMixin object' has no attribute 'profile_image'
+2019-10-14 17:20:44,073 INFO: Company Blog [in /Users/nidhi/Documents/Projects/social-company-blog/companyblog/__init__.py:73]

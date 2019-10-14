@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template
+from companyblog import app, db
 
 error_pages = Blueprint('error_pages', __name__)
 
@@ -10,3 +11,7 @@ def error_404(error):
 def error_403(error):
     return render_template('error_pages/403.html') , 403
 
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('error_pages/500.html'), 500
