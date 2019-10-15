@@ -52,3 +52,24 @@ class BlogPost(db.Model):
         return "Post ID: {}".format(self.id)
 
 
+class Tag(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    tag = db.Column(db.String(64), nullable=False, unique=True)
+
+    blogposts = db.relationship(
+        'BlogPost', secondary=tag_post,
+        primaryjoin=(tag_post.c.tag_id == id),
+        secondaryjoin=(tag_post.c.post_id == id),
+        backref=db.backref('tags', lazy='dynamic'), lazy='dynamic')
+
+    def __init__(self,tag):
+        self.tag = tag
+
+    def __repr__(self):
+        return "Tag: {}".format(self.tag)
+
+
+tag_post = db.Table('post_tag',
+    db.Column('tag_id', db.Integer, db.ForeignKey('blogpost.id')),
+    db.Column('post_id', db.Integer, db.ForeignKey('tag.id'))
+)
