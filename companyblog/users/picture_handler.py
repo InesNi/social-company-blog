@@ -5,6 +5,10 @@ from flask import url_for, current_app
 from flask_login import current_user
 
 def add_profile_pic(pic_upload, email):
+    """
+    Takes in image, deletes previous profile image,
+    sets a new hashed path to new image and sets it as new profile image
+    """
     if current_user.profile_image != 'default_profile.png':
         filepath = os.path.join(current_app.root_path, 'static/profile_pics', current_user.profile_image)
         os.remove(filepath)
