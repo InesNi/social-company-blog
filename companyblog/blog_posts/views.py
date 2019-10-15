@@ -113,6 +113,12 @@ def delete(slug):
     blog_post = BlogPost.query.filter_by(slug=slug).first_or_404()
     if blog_post.author != current_user:
         abort(403)
+    
+    for tag in blog_post.tags:
+        blog_post.untag(tag)
+        if not tag.posts:
+            db.session.delete(tag)
+
     db.session.delete(blog_post)
     db.session.commit()
     flash('Blog post successfully deleted', 'success')
