@@ -10,6 +10,7 @@ blog_posts = Blueprint('blog_posts', __name__)
 
 
 def get_or_create_tag(label):
+    """Gets tag if existing,otherwise creates it"""
     tag = Tag.query.filter_by(tag=label).first()
     if not tag:
         tag = Tag(tag=label)
@@ -19,7 +20,8 @@ def get_or_create_tag(label):
 
 
 def tags_from_string(str_tags, post):
-    """Gets or creates tags given in string format and
+    """
+    Gets or creates tags given in string format and
     creates relationship between them and post if nonexistant
     """
     new_tags = str_tags.strip().split(',')
@@ -57,11 +59,12 @@ def update_from_form(post, form):
     db.session.commit()
 
 
-
 # CREATE
+
 @blog_posts.route('/create', methods=['GET', 'POST'])
 @login_required
 def create():
+    """Creates a blog post"""
     form = BlogPostForm()
 
     if form.validate_on_submit():
@@ -73,22 +76,29 @@ def create():
         )
         db.session.add(blog_post)
         db.session.commit()
+        # creates and/or connects inputed tags with the post
         tags_from_string(form.tags.data, blog_post)
         flash('Blog post successfully created!', 'success')
         return redirect(url_for('core.index'))
     return render_template('create_post.html', form=form)
 
+
 # VIEW
+
 @blog_posts.route('/post/<slug>', methods=['GET', 'POST'])
 def view_post(slug):
-    page = request.args.get("page", 1, type=int)
+    """Renderes individual post with all details"""
     blog_post = BlogPost.query.filter_by(slug=slug).first_or_404()
+    # sets page for pagination
+    page = request.args.get("page", 1, type=int)
+    # orders and paginates comments related to the post
     comments = Comment.query.filter(Comment.post_id == blog_post.id).order_by(
         Comment.timestamp.desc()).paginate(page, app.config['POSTS_PER_PAGE'], False)
+
     form = CommentForm()
 
+    # creates a new comment if inputed and connects it to the post
     if form.validate_on_submit():
-        # if form.text is not None:
         comment = Comment(
             text=form.text.data,
             author=current_user._get_current_object(),
@@ -118,10 +128,11 @@ def posts_by_tag(tag):
 
 
 # UPDATE
+
 @blog_posts.route('/<slug>/update', methods=['GET', 'POST'])
 @login_required
 def update(slug):
-
+    """Updates post"""
     blog_post = BlogPost.query.filter_by(slug=slug).first_or_404()
     if blog_post.author != current_user:
         abort(403)
@@ -134,6 +145,7 @@ def update(slug):
         flash('Blog post successfully updated', 'success')
         return redirect(url_for('blog_posts.view_post', slug=blog_post.slug))
 
+    # populates the form fields with existing data
     elif request.method == 'GET':
         form.title.data = blog_post.title
         form.text.data = blog_post.text
@@ -141,17 +153,20 @@ def update(slug):
         
     return render_template('create_post.html', form=form)
 
+
 # DELETE
+
 @blog_posts.route('/<slug>/delete', methods=['GET', 'POST'])
 @login_required
 def delete(slug):
-
+    """Deletes the post, removes connection to tags and/or deletes tags"""
     blog_post = BlogPost.query.filter_by(slug=slug).first_or_404()
     if blog_post.author != current_user:
         abort(403)
     
     for tag in blog_post.tags:
         blog_post.untag(tag)
+        # deletes the tag if it is not connected to any other posts 
         if not tag.posts:
             db.session.delete(tag)
 
@@ -162,10 +177,14 @@ def delete(slug):
 
 
 # REMOVE COMMENT
+
 @blog_posts.route('/remove_comment/<post_slug>/<int:id>')
 @login_required
 def remove_comment(id, post_slug):
+    """Deletes chosen comment"""
     comment = Comment.query.filter_by(id=id).first_or_404()
+    if comment.author != current_user:
+        abort(403)
     db.session.delete(comment)
     db.session.commit()
     flash('Comment successfully removed!', 'success')

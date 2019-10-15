@@ -24,15 +24,46 @@
         </a>
     </p>
     <div class="collapse" id="collapseExample">
-      {% for comment in comments.items %}
+      
       <div class="card card-body">
-        <div><a href="{{ url_for('users.user_posts', username=comment.author.username) }}">{{ comment.author.username }}</a> said {{ comment.timestamp.strftime('%Y-%m-%d at %H:%M') }}</div>
-        {{ comment.text }}
-        {% if post.author == current_user %}
-          <a href="{{ url_for('blog_posts.remove_comment', id=comment.id, post_slug=post.slug) }}">Remove</a>
-          {% endif %}
+        {% for comment in comments.items %}
+          <div class="card">
+              <div class="card-header">
+                  <a href="{{ url_for('users.user_posts', username=comment.author.username) }}" >{{ comment.author.username }}</a>
+                  said {{ comment.timestamp.strftime('%Y-%m-%d at %H:%M') }}
+              </div>
+              <div class="card-body">
+                <blockquote class="blockquote mb-0">
+                  <p>{{ comment.text }}</p>
+                  <footer class="blockquote-footer">
+                      {% if post.author == current_user %}
+                      <a href="{{ url_for('blog_posts.remove_comment', id=comment.id, post_slug=post.slug) }}">Remove</a>
+                      {% endif %}
+                  </footer>
+                </blockquote>
+              </div>
+          </div>
+        {% endfor %}
+
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center pt-3">
+                {% for page_num in comments.iter_pages(left_edge=1,right_edge=1,left_current=1,right_current=1) %}
+                    {% if comments.page == page_num %}
+                      <li class='page-item disabled'>
+                          <a class="page-link" href="{{url_for('blog_posts.view_post', slug=post.slug, page=page_num)}}">{{ page_num}}</a>
+                      </li>
+                    {% else %}
+                        <li class='page-item'>
+                            <a class="page-link" href="{{url_for('blog_posts.view_post', slug=post.slug, page=page_num)}}">{{ page_num}}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        
+        </nav>
+
       </div>
-      {% endfor %}
+      
       {% if current_user.is_authenticated %}
       <div>
         <form action="" method="POST">
@@ -46,24 +77,6 @@
       {% endif %}
     </div>
 </div>
-
-<nav aria-label="Page navigation example">
-    <ul class="pagination justify-content-center pt-3">
-        {% for page_num in comments.iter_pages(left_edge=1,right_edge=1,left_current=1,right_current=1) %}
-            {% if comments.page == page_num %}
-            <li class='page-item disabled'>
-                <a class="page-link" href="{{url_for('blog_posts.view_post', slug=post.slug)}}">{{ page_num}}</a>
-            </li>
-            {% else %}
-            <li class='page-item'>
-                    <a class="page-link" href="{{url_for('blog_posts.view_post', slug=post.slug)}}">{{ page_num}}</a>
-                </li>
-            {% endif %}
-        {% endfor %}
-    </ul>
-
-</nav>
-
 
 <div class="modal fade" id="del_modal" tabindex="-1" role="dialog" aria-labelledby="del_modalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
