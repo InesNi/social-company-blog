@@ -7,16 +7,52 @@ from companyblog.blog_posts.forms import BlogPostForm, UpdatePostForm
 
 blog_posts = Blueprint('blog_posts', __name__)
 
-def update_from_form(post, form):
-    """updates post with data provided in form"""
+
+def get_or_create_tag(label):
+    tag = Tag.query.filter_by(tag=label).first()
+    if not tag:
+        tag = Tag(label)
+        db.session.add(tag)
+        db.session.commit()
+    return tag
+    
+
+def slugify(data):
+    slug = data.strip().lower().replace(' ', '-')
+
+
+def tags_from_string(str_tags, post):
+    """Gets or creates tags given in string format and
+    creates relationship between them and post if nonexistant
+    """
+    new_tags = str_tags.strip().split(',')
+    for item in new_tags:
+        if item not in string.whitespace:
+            tag = get_or_create_tag(item)
+            post.tag(tag)
+    return new_tags
+
+
+def update_tags(post, form):
+    """Updates tags of post with data provided in form"""
+    new_tags = tags_from_string(form.tags.data, post)
+    for tag in post.tags:
+        if tag.tag not in new_tags:
+            post.untag(tag)
+            if not tag.posts:
+                db.session.delete(tag)
+                db.session.commit()
+
+
+def update_post_from_form(post, form):
+    """Updates post with data provided in form"""
     for field,data in request.form.items():
-            if field == 'tags':
-                pass
-            else:
+            if field != 'tags':
                 setattr(post, field, data)
-    post.slug=form.title.data.strip().lower().replace(' ', '-')
+    post.slug=slugify(form.title.data)
     post.author=current_user._get_current_object()
     db.session.commit()
+    update_tags(post, form)
 
 
 # CREATE
@@ -30,8 +66,9 @@ def create():
                     title=form.title.data,
                     text=form.text.data,
                     user_id=current_user.id,
-                    slug=form.title.data.strip().lower().replace(' ', '-')
+                    slug=slugify(form.title.data)
         )
+        tags_from_string(form.tags.data, blog_post)
         db.session.add(blog_post)
         db.session.commit()
         flash('Blog post successfully created!', 'success')
@@ -64,6 +101,7 @@ def update(slug):
     elif request.method == 'GET':
         form.title.data = blog_post.title
         form.text.data = blog_post.text
+        form.tags.data = ','.join([tag.tag for tag in blog_post.tags])
         
     return render_template('create_post.html', form=form)
 
