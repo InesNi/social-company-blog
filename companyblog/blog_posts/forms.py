@@ -28,3 +28,8 @@ class UpdatePostForm(FlaskForm):
             post = BlogPost.query.filter_by(title=self.title.data).first()
             if post:
                 raise ValidationError('Post with this title already exists, please choose another title')
+
+
+class CommentForm(FlaskForm):
+    text = StringField('Comment', validators=[DataRequired()])
+    submit = SubmitField('Comment')
