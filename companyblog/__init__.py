@@ -11,6 +11,7 @@ from companyblog.config import Config
 app = Flask(__name__)
 app.config.from_object(Config)
 
+
 ################################
 ####### DATABASE SETUP #########
 ################################
@@ -18,8 +19,9 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 Migrate(app, db)
 
+
 ##################################
-### LOGIN CONFIGS ################
+######### LOGIN CONFIGS ##########
 ##################################
 
 login_manager = LoginManager()
@@ -39,11 +41,12 @@ app.register_blueprint(blog_posts)
 
 
 ################################
-####### DATABASE SETUP #########
+####### LOGGING SETUP #########
 ################################
 
 
 if not app.debug:
+    # sends errors to mail
     if app.config['MAIL_SERVER']:
         auth = None
         if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
@@ -59,7 +62,7 @@ if not app.debug:
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler)
 
-
+    # sets up logging to file
     if not os.path.exists('logs'):
         os.mkdir('logs')
     file_handler = RotatingFileHandler('logs/companyblog.log', maxBytes=10240,
