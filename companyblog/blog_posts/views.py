@@ -1,7 +1,8 @@
 from flask import render_template, redirect, request, flash,url_for, Blueprint
 from flask_login import current_user, login_required
-from companyblog import db
-from companyblog.models import BlogPost
+import string
+from companyblog import db, app
+from companyblog.models import BlogPost, Tag, post_tag
 from companyblog.blog_posts.forms import BlogPostForm, UpdatePostForm
 
 
@@ -11,7 +12,7 @@ blog_posts = Blueprint('blog_posts', __name__)
 def get_or_create_tag(label):
     tag = Tag.query.filter_by(tag=label).first()
     if not tag:
-        tag = Tag(label)
+        tag = Tag(tag=label)
         db.session.add(tag)
         db.session.commit()
     return tag
@@ -26,10 +27,16 @@ def tags_from_string(str_tags, post):
     creates relationship between them and post if nonexistant
     """
     new_tags = str_tags.strip().split(',')
+    print(new_tags)
     for item in new_tags:
         if item not in string.whitespace:
+            print(item)
             tag = get_or_create_tag(item)
+            print(tag.tag)
             post.tag(tag)
+    for item in post.tags:
+        print(item.tag)
+    db.session.commit()
     return new_tags
 
 
@@ -41,15 +48,15 @@ def update_tags(post, form):
             post.untag(tag)
             if not tag.posts:
                 db.session.delete(tag)
-                db.session.commit()
+    db.session.commit()
 
 
-def update_post_from_form(post, form):
+def update_from_form(post, form):
     """Updates post with data provided in form"""
     for field,data in request.form.items():
             if field != 'tags':
                 setattr(post, field, data)
-    post.slug=slugify(form.title.data)
+    post.slug=form.title.data.strip().lower().replace(' ', '-')
     post.author=current_user._get_current_object()
     db.session.commit()
     update_tags(post, form)
@@ -66,11 +73,11 @@ def create():
                     title=form.title.data,
                     text=form.text.data,
                     user_id=current_user.id,
-                    slug=slugify(form.title.data)
+                    slug=form.title.data.strip().lower().replace(' ', '-')
         )
-        tags_from_string(form.tags.data, blog_post)
         db.session.add(blog_post)
         db.session.commit()
+        tags_from_string(form.tags.data, blog_post)
         flash('Blog post successfully created!', 'success')
         return redirect(url_for('core.index'))
     return render_template('create_post.html', form=form)
@@ -80,6 +87,24 @@ def create():
 def view_post(slug):
     blog_post = BlogPost.query.filter_by(slug=slug).first_or_404()
     return render_template('view_post.html', title=blog_post.title, text=blog_post.text, date=blog_post.date, post=blog_post)
+
+
+# VIEW BY TAG
+
+@blog_posts.route('/posts/<tag>')
+def posts_by_tag(tag):
+    """Fetches all posts related to tag that is passed in"""
+    print(tag)
+    page = request.args.get("page", 1, type=int)
+    label = Tag.query.filter_by(tag=tag).first_or_404()
+    print(label.tag)
+    posts = label.posts.order_by(BlogPost.date.desc()).paginate(page,
+                                            app.config['POSTS_PER_PAGE'], False)
+    return render_template(
+        'posts_by_tag.html',
+        title="Blog Post Entries|{}".format(tag),
+        blog_posts=posts, tag=label
+    )
 
 
 # UPDATE

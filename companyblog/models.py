@@ -32,8 +32,8 @@ class User(db.Model, UserMixin):
 
 
 post_tag = db.Table('post_tag',
-    db.Column('blogpost_id', db.Integer, db.ForeignKey('blogpost.id')),
-    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
+    db.Column('blogpost_id', db.Integer, db.ForeignKey('blogpost.id'), primary_key=True),
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'), primary_key=True)  
 )
 
 
@@ -53,9 +53,8 @@ class BlogPost(db.Model):
 
     tags = db.relationship(
         'Tag', secondary=post_tag,
-        primaryjoin=(post_tag.c.blogpost_id == id),
-        secondaryjoin=(post_tag.c.tag_id == id),
-        backref=db.backref('posts', lazy='dynamic'), lazy='dynamic')
+        backref=db.backref('posts', lazy='dynamic'), lazy='dynamic'
+    )
 
     def __init__(self,title,text,user_id, slug):
         self.title = title
@@ -76,7 +75,7 @@ class BlogPost(db.Model):
 
     def tagged(self, tag):
         return self.tags.filter(
-            tag_post.c.tag_id == tag.id).count() > 0
+            post_tag.c.tag_id == tag.id).count() > 0
 
 
 class Tag(db.Model):
