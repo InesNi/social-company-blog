@@ -31,6 +31,12 @@ class User(db.Model, UserMixin):
         return "Username {}".format(self.username)
 
 
+post_tag = db.Table('post_tag',
+    db.Column('blogpost_id', db.Integer, db.ForeignKey('blogpost.id')),
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
+)
+
+
 class BlogPost(db.Model):
 
     __tablename__ = 'blogpost'
@@ -45,6 +51,12 @@ class BlogPost(db.Model):
     text = db.Column(db.Text,nullable=False)
     slug = db.Column(db.String(140), nullable=False)
 
+    tags = db.relationship(
+        'Tag', secondary=post_tag,
+        primaryjoin=(post_tag.c.blogpost_id == id),
+        secondaryjoin=(post_tag.c.tag_id == id),
+        backref=db.backref('posts', lazy='dynamic'), lazy='dynamic')
+
     def __init__(self,title,text,user_id, slug):
         self.title = title
         self.text = text
@@ -54,24 +66,29 @@ class BlogPost(db.Model):
     def __repr__(self):
         return "Post ID: {}".format(self.id)
 
+    def tag(self, tag):
+        if not self.tagged(tag):
+            self.tags.append(tag)
 
-tag_post = db.Table('tag_post',
-    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
-    db.Column('blogpost_id', db.Integer, db.ForeignKey('blogpost.id'))
-)
+    def untag(self, tag):
+        if self.tagged(tag):
+            self.tags.remove(tag)
+
+    def tagged(self, tag):
+        return self.tags.filter(
+            tag_post.c.tag_id == tag.id).count() > 0
+
 
 class Tag(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     tag = db.Column(db.String(64), nullable=False, unique=True)
 
-    blogposts = db.relationship(
-        'BlogPost', secondary=tag_post,
-        primaryjoin=(tag_post.c.tag_id == id),
-        secondaryjoin=(tag_post.c.blogpost_id == id),
-        backref=db.backref('tags', lazy='dynamic'), lazy='dynamic')
 
     def __init__(self,tag):
         self.tag = tag
 
     def __repr__(self):
         return "Tag: {}".format(self.tag)
+
+
+
