@@ -2,8 +2,8 @@ from flask import render_template, redirect, request, flash,url_for, Blueprint
 from flask_login import current_user, login_required
 import string
 from companyblog import db, app
-from companyblog.models import BlogPost, Tag, post_tag
-from companyblog.blog_posts.forms import BlogPostForm, UpdatePostForm
+from companyblog.models import BlogPost, Tag, post_tag, Comment
+from companyblog.blog_posts.forms import BlogPostForm, UpdatePostForm, CommentForm
 
 
 blog_posts = Blueprint('blog_posts', __name__)
@@ -55,7 +55,7 @@ def update_from_form(post, form):
     post.slug=form.title.data.strip().lower().replace(' ', '-')
     post.author=current_user._get_current_object()
     db.session.commit()
-    update_tags(post, form)
+
 
 
 # CREATE
@@ -79,10 +79,26 @@ def create():
     return render_template('create_post.html', form=form)
 
 # VIEW
-@blog_posts.route('/post/<slug>')
+@blog_posts.route('/post/<slug>', methods=['GET', 'POST'])
 def view_post(slug):
+    page = request.args.get("page", 1, type=int)
     blog_post = BlogPost.query.filter_by(slug=slug).first_or_404()
-    return render_template('view_post.html', title=blog_post.title, text=blog_post.text, date=blog_post.date, post=blog_post)
+    comments = Comment.query.filter(Comment.post_id == blog_post.id).order_by(
+        Comment.timestamp.desc()).paginate(page, app.config['POSTS_PER_PAGE'], False)
+    form = CommentForm()
+
+    if form.validate_on_submit():
+        # if form.text is not None:
+        comment = Comment(
+            text=form.text.data,
+            author=current_user._get_current_object(),
+            post=blog_post
+        )
+        db.session.add(comment)
+        db.session.commit()
+        flash('Comment successfully posted!', 'success')
+        return redirect(url_for('blog_posts.view_post', slug=blog_post.slug))
+    return render_template('view_post.html', post=blog_post, comments=comments, form=form)
 
 
 # VIEW BY TAG
@@ -114,6 +130,7 @@ def update(slug):
 
     if form.validate_on_submit():
         update_from_form(blog_post, form)
+        update_tags(blog_post, form)
         flash('Blog post successfully updated', 'success')
         return redirect(url_for('blog_posts.view_post', slug=blog_post.slug))
 
@@ -142,3 +159,14 @@ def delete(slug):
     db.session.commit()
     flash('Blog post successfully deleted', 'success')
     return redirect(url_for('core.index'))
+
+
+# REMOVE COMMENT
+@blog_posts.route('/remove_comment/<post_slug>/<int:id>')
+@login_required
+def remove_comment(id, post_slug):
+    comment = Comment.query.filter_by(id=id).first_or_404()
+    db.session.delete(comment)
+    db.session.commit()
+    flash('Comment successfully removed!', 'success')
+    return redirect(url_for('blog_posts.view_post', slug=post_slug))

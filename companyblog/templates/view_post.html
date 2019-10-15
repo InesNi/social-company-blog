@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="jumbotron">
-    <h3>{{title}}</h3>
+    <h3>{{post.title}}</h3>
     <h4>Written by: <a href="{{url_for('users.user_posts', username=post.author.username)}}">{{post.author.username}}</a></h4>
-    <h5>Published: {{date.strftime('%Y-%m-%d')}}</h5>
-    <p>{{text}}</p>
+    <h5>Published: {{post.date.strftime('%Y-%m-%d')}}</h5>
+    <p>{{post.text}}</p>
     <div >
         {% for tag in post.tags %}
           <a href="{{url_for('blog_posts.posts_by_tag', tag=tag.tag)}}" class="btn btn-outline-secondary btn-sm">{{ tag.tag }}</a>
@@ -17,7 +17,53 @@
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#del_modal">Delete</button>
     </div>
     {% endif %}
+    <br>
+    <p>
+        <a class="btn btn-outline-secondary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+          Comments
+        </a>
+    </p>
+    <div class="collapse" id="collapseExample">
+      {% for comment in comments.items %}
+      <div class="card card-body">
+        <div><a href="{{ url_for('users.user_posts', username=comment.author.username) }}">{{ comment.author.username }}</a> said {{ comment.timestamp.strftime('%Y-%m-%d at %H:%M') }}</div>
+        {{ comment.text }}
+        {% if post.author == current_user %}
+          <a href="{{ url_for('blog_posts.remove_comment', id=comment.id, post_slug=post.slug) }}">Remove</a>
+          {% endif %}
+      </div>
+      {% endfor %}
+      {% if current_user.is_authenticated %}
+      <div>
+        <form action="" method="POST">
+          {{ form.hidden_tag() }}
+          <div class="form-group">
+            {{ form.text(class="form-control") }}
+            {{ form.submit(class="btn btn-secondary btn-sm")}}
+          </div>
+        </form>
+      </div>
+      {% endif %}
+    </div>
 </div>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center pt-3">
+        {% for page_num in comments.iter_pages(left_edge=1,right_edge=1,left_current=1,right_current=1) %}
+            {% if comments.page == page_num %}
+            <li class='page-item disabled'>
+                <a class="page-link" href="{{url_for('blog_posts.view_post', slug=post.slug)}}">{{ page_num}}</a>
+            </li>
+            {% else %}
+            <li class='page-item'>
+                    <a class="page-link" href="{{url_for('blog_posts.view_post', slug=post.slug)}}">{{ page_num}}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+</nav>
+
 
 <div class="modal fade" id="del_modal" tabindex="-1" role="dialog" aria-labelledby="del_modalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -40,4 +86,6 @@
           </div>
         </div>
       </div>
+
+
 {% endblock %}
