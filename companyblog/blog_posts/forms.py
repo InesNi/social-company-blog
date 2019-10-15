@@ -6,6 +6,7 @@ from companyblog.models import BlogPost
 class BlogPostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     text = TextAreaField('Text', validators=[DataRequired()])
+    tags = StringField('Tags', validators=[DataRequired()])
     submit = SubmitField('Post')
 
     def validate_title(self,form):
@@ -15,6 +16,7 @@ class BlogPostForm(FlaskForm):
 class UpdatePostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     text = TextAreaField('Text', validators=[DataRequired()])
+    tags = StringField('Tags', validators=[DataRequired()])
     submit = SubmitField('Post')
 
     def __init__(self, orig_title, *args, **kwargs):

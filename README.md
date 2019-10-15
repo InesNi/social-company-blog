@@ -1,5 +1,11 @@
 # social-company-blog
 
+## Tech Stack
+- Python 3
+- Flask
+- Bootstrap
+- Flask-sqlachemy
+
 ## How to run
 
 1. Create new virtual environment by running `python3 -m venv env`;

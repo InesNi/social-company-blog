@@ -2,14 +2,21 @@
 {% from 'macros.html' import render_post %}
 {% block content %}
     <div class="jumbotron">
-        <h1>Chookity Blog</h1>
+        <h1>Company Blog</h1>
 
     </div>
     <div class="container">
         {% for post in blog_posts.items %}
             {{ render_post(post) }}
         {% endfor %}
+        <!-- {% for post in posts %}
+          {{post.title }}
+          {% for tag in post.tags %}
+            {{ tag.tag }}
+          {% endfor %}
+        {% endfor %} -->
     </div>
+
     <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center pt-3">
                 {% for page_num in blog_posts.iter_pages(left_edge=1,right_edge=1,left_current=1,right_current=1) %}
@@ -26,4 +33,6 @@
             </ul>
         
         </nav>
+
+        
 {% endblock %}
