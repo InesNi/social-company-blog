@@ -16,10 +16,6 @@ def get_or_create_tag(label):
         db.session.add(tag)
         db.session.commit()
     return tag
-    
-
-def slugify(data):
-    slug = data.strip().lower().replace(' ', '-')
 
 
 def tags_from_string(str_tags, post):
@@ -94,10 +90,8 @@ def view_post(slug):
 @blog_posts.route('/posts/<tag>')
 def posts_by_tag(tag):
     """Fetches all posts related to tag that is passed in"""
-    print(tag)
     page = request.args.get("page", 1, type=int)
     label = Tag.query.filter_by(tag=tag).first_or_404()
-    print(label.tag)
     posts = label.posts.order_by(BlogPost.date.desc()).paginate(page,
                                             app.config['POSTS_PER_PAGE'], False)
     return render_template(
