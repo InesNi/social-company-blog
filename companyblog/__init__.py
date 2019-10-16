@@ -7,6 +7,7 @@ import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
 from companyblog.config import Config
+from companyblog.commands import create_tables
 
 
 db = SQLAlchemy()
