@@ -1,2 +1,1 @@
-web:flask db upgrade; gunicorn app.wsgi:app
-WEB_CONCURRENCY = 4
+web: flask db upgrade; gunicorn -w=2 app:app
