@@ -26,15 +26,10 @@ def tags_from_string(str_tags, post):
     creates relationship between them and post if nonexistant
     """
     new_tags = str_tags.strip().split(',')
-    print(new_tags)
     for item in new_tags:
         if item not in string.whitespace:
-            print(item)
             tag = get_or_create_tag(item)
-            print(tag.tag)
             post.tag(tag)
-    for item in post.tags:
-        print(item.tag)
     db.session.commit()
     return new_tags
 
@@ -93,8 +88,8 @@ def view_post(slug):
     # sets page for pagination
     page = request.args.get("page", 1, type=int)
     # orders and paginates comments related to the post
-    comments = Comment.query.filter(Comment.post_id == blog_post.id).order_by(
-        Comment.timestamp.desc()).paginate(
+    comments = Comment.query.filter(Comment.post_id==blog_post.id).order_by(
+        Comment.timestamp).paginate(
             page, current_app.config['POSTS_PER_PAGE'], False
             )
 
@@ -174,6 +169,9 @@ def delete(slug):
         # deletes the tag if it is not connected to any other posts 
         if not tag.posts:
             db.session.delete(tag)
+    
+    for comment in blog_post.comments:
+        db.session.delete(comment)
 
     db.session.delete(blog_post)
     db.session.commit()
