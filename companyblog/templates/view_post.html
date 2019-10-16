@@ -36,7 +36,7 @@
                 <blockquote class="blockquote mb-0">
                   <p>{{ comment.text }}</p>
                   <footer class="blockquote-footer">
-                      {% if post.author == current_user %}
+                      {% if comment.author == current_user %}
                       <a href="{{ url_for('blog_posts.remove_comment', id=comment.id, post_slug=post.slug) }}">Remove</a>
                       {% endif %}
                   </footer>
@@ -53,7 +53,7 @@
                           <a class="page-link" href="{{url_for('blog_posts.view_post', slug=post.slug, page=page_num)}}">{{ page_num}}</a>
                       </li>
                     {% else %}
-                        <li class='page-item'>
+                        <li class='page-item' href="#collapseExample">
                             <a class="page-link" href="{{url_for('blog_posts.view_post', slug=post.slug, page=page_num)}}">{{ page_num}}</a>
                         </li>
                     {% endif %}

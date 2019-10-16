@@ -30,7 +30,6 @@ def tags_from_string(str_tags, post):
         if item not in string.whitespace:
             tag = get_or_create_tag(item)
             post.tag(tag)
-    for item in post.tags:
     db.session.commit()
     return new_tags
 
