@@ -1,20 +1,15 @@
 import os
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
+from companyblog.extensions import db, login_manager
 from companyblog.config import Config
 from companyblog.commands import create_tables
 
-
-db = SQLAlchemy()
 migrate = Migrate()
-login_manager = LoginManager()
 login_manager.login_view = 'users.login'
-
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -34,6 +29,8 @@ def create_app(config_class=Config):
     app.register_blueprint(error_pages)
     app.register_blueprint(users)
     app.register_blueprint(blog_posts)
+
+    app.cli.add_command(create_tables)
 
 
     if not app.debug:
