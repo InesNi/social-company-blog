@@ -1,2 +1,2 @@
-web:flask db upgrade; gunicorn social-company-blog:app
+web:flask db upgrade; gunicorn app:app
 WEB_CONCURRENCY = 4

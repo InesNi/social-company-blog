@@ -1,2 +1,2 @@
-FLASK_APP=companyblog.py
+FLASK_APP=app.py
 PORT=8000
