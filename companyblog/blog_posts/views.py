@@ -1,7 +1,8 @@
-from flask import render_template, redirect, request, flash,url_for, Blueprint
+from flask import (render_template, redirect, request,
+                   flash,url_for, Blueprint, current_app)
 from flask_login import current_user, login_required
 import string
-from companyblog import db, app
+from companyblog import db
 from companyblog.models import BlogPost, Tag, post_tag, Comment
 from companyblog.blog_posts.forms import BlogPostForm, UpdatePostForm, CommentForm
 
@@ -93,7 +94,9 @@ def view_post(slug):
     page = request.args.get("page", 1, type=int)
     # orders and paginates comments related to the post
     comments = Comment.query.filter(Comment.post_id == blog_post.id).order_by(
-        Comment.timestamp.desc()).paginate(page, app.config['POSTS_PER_PAGE'], False)
+        Comment.timestamp.desc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False
+            )
 
     form = CommentForm()
 
@@ -108,7 +111,9 @@ def view_post(slug):
         db.session.commit()
         flash('Comment successfully posted!', 'success')
         return redirect(url_for('blog_posts.view_post', slug=blog_post.slug))
-    return render_template('view_post.html', post=blog_post, comments=comments, form=form)
+    return render_template(
+        'view_post.html', post=blog_post, comments=comments, form=form
+        )
 
 
 # VIEW BY TAG
@@ -119,7 +124,7 @@ def posts_by_tag(tag):
     page = request.args.get("page", 1, type=int)
     label = Tag.query.filter_by(tag=tag).first_or_404()
     posts = label.posts.order_by(BlogPost.date.desc()).paginate(page,
-                                            app.config['POSTS_PER_PAGE'], False)
+                                            current_app.config['POSTS_PER_PAGE'], False)
     return render_template(
         'posts_by_tag.html',
         title="Blog Post Entries|{}".format(tag),

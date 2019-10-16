@@ -1,12 +1,16 @@
 import os
+from dotenv import load_dotenv
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, '.env'))
+
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'ysdiuLMfh8w4hfesncD87yw3'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data.sqlite')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')
     POSTS_PER_PAGE = 5
 
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
